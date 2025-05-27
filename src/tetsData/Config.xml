@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+    <browser>chrome</browser>
+    <username>shai</username>
+    <password>Aa123456!</password>
+
+    <url>https://www.bth.co.il/</url>
+
+</config>
