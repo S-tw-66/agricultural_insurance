@@ -65,11 +65,22 @@ protected WebElement waitForElementToBeVisible(By locator) {
         }
     }
 
+    public void waitSleep() {
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // משחזר את מצב ההפרעה של התהליך
+            System.err.println("Interrupted: " + e.getMessage());
+        }
+    }
+
+
     public void select(By locator, String text) {
         waitForElementToBeVisible(locator);
         selectValue = new Select(driver.findElement(locator));
         selectValue.selectByVisibleText(text);
     }
+
 
     protected String getUrl() {
         return driver.getCurrentUrl();

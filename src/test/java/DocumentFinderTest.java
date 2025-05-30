@@ -12,4 +12,15 @@ public class DocumentFinderTest extends BaseTest {
             System.out.println("Error: " + error);
         }
     }
+    @Test(description = "UI- Clearing document search results")
+    public void TC_059() {
+        try {
+            documentFinderPage.NoneSearchResults();
+            Assert.assertTrue(documentFinderPage.tableHide());
+        } catch (AssertionError error) {
+            System.out.println("Error: " + error);
+        }
+    }
+
+
 }

@@ -52,7 +52,7 @@ public class TravelInsuranceQuoteFlowPage extends BasePage{
         switchTo(winHandles.get(1));
         click(toContinue);
         click(close);
-        switchTo(winHandles.get(0));
+
     }
     //TC_039
     public void letsContinue(){

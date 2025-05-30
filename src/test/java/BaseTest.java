@@ -1,9 +1,10 @@
-
 import Pageeobject.CarInsurancePage;
+import Pageeobject.ContactFormPage;
 import Pageeobject.DocumentFinderPage;
 import Pageeobject.TravelInsuranceQuoteFlowPage;
 import io.qameta.allure.Allure;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -13,13 +14,11 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.testng.annotations.*;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.io.PushbackInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -30,12 +29,19 @@ import java.util.Date;
 public class BaseTest {
     public static WebDriver driver;
     public static String reportPath = "src/tetsData/Config.xml";
-    TravelInsuranceQuoteFlowPage travelInsuranceQuoteFlowPage;
-    CarInsurancePage carInsurancePage;
-    DocumentFinderPage documentFinderPage;
-    @BeforeSuite
+    static TravelInsuranceQuoteFlowPage travelInsuranceQuoteFlowPage;
+    static CarInsurancePage carInsurancePage;
+    static DocumentFinderPage documentFinderPage;
+    static ContactFormPage contactFormPage;
+    @BeforeMethod
     public static void setUp() throws ParserConfigurationException, IOException, SAXException {
+        Proxy proxy = new Proxy();
+        proxy.setHttpProxy("198.7.58.79\n" +
+                "\n:8080");
+        proxy.setSslProxy("198.7.58.79\n" +
+                "\n:8080");
         ChromeOptions options = new ChromeOptions();
+//        options.setProxy(proxy);
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
         options.setExperimentalOption("useAutomationExtension", false);
@@ -56,37 +62,21 @@ public class BaseTest {
             default:
                 throw new IllegalArgumentException("Unsupported browser: " + browser);
         }
-    }
-//    @BeforeMethod
-//    public void beforeEach() throws ParserConfigurationException, IOException, SAXException {
-//        driver.get(readFromFile("url", reportPath));
-//        travelInsuranceQuoteFlowPage = new TravelInsuranceQuoteFlowPage(driver);
-//        carInsurancePage = new CarInsurancePage(driver);
-//        documentFinderPage = new DocumentFinderPage(driver);
-//    }
-    @BeforeTest
-    public void beforeTest() throws ParserConfigurationException, IOException, SAXException {
         driver.get(readFromFile("url", reportPath));
         travelInsuranceQuoteFlowPage = new TravelInsuranceQuoteFlowPage(driver);
         carInsurancePage = new CarInsurancePage(driver);
         documentFinderPage = new DocumentFinderPage(driver);
+        contactFormPage = new ContactFormPage(driver);
     }
-    @AfterTest
-    public void afterTest(){
+
+    @AfterMethod
+    public void afterTest() {
         takeScreenShot();
-        driver.close();
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
-//    @AfterMethod
-//    public void afterEach() {
-//        takeScreenShot();
-//    }
-//    @AfterClass
-//    public static void tearDown() {
-//        if (driver != null) {
-//         driver.quit();
-//        }
-//    }
+
     public static String readFromFile(String keyData, String pathName) throws ParserConfigurationException, IOException, SAXException {
         String data = "";
         try {
@@ -104,7 +94,8 @@ public class BaseTest {
         }
         return data;
     }
-    public static String takeScreenShot() {
+
+    public void takeScreenShot() {
         try {
             String timeStamp = new SimpleDateFormat("dd.MM.yyyy_HHmm").format(new Date());
             String fileName = timeStamp + "_" + System.currentTimeMillis() + ".png";
@@ -116,10 +107,8 @@ public class BaseTest {
             // Add to allure report
             Allure.addAttachment("Screenshot - " + timeStamp,
                     Files.newInputStream(screenShotFile.toPath()));
-            return fileName;
         } catch (IOException e) {
             System.out.println("Failed to save screenshot: " + e.getMessage());
-            return null;
         }
     }
 }
